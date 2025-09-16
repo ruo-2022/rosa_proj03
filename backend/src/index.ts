@@ -27,7 +27,9 @@ app.get("/", (req:Request, res:Response)=>{
 res.send("首頁");
 });
 
-//啟動伺服器
+//啟動伺服器 
+//process.env.PORT → 從 .env 讀取
+//如果 .env 沒設定或讀不到 → 使用 3002 作為預設值
 const port = process.env.PORT || 3002;
 app.listen(port, ()=>{
     console.log(`Express + TS 啟動 http://localhost:${port}`);
