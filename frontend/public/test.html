@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>商城系統 + 商品 CRUD</title>
+<style>
+body { font-family: Arial, sans-serif; padding: 20px; }
+input, button { margin: 5px; }
+.section { margin-bottom: 20px; padding: 10px; border: 1px solid #ccc; }
+ul { list-style: none; padding: 0; }
+li { margin-bottom: 5px; }
+img { width: 50px; height: 50px; object-fit: cover; margin-right: 10px; }
+</style>
+</head>
+<body>
+
+<h1>商城系統 + 商品 CRUD 測試頁</h1>
+
+<!-- 會員區塊 -->
+<div class="section">
+  <h2>註冊會員</h2>
+  <input id="reg-name" placeholder="Name">
+  <input id="reg-email" placeholder="Email">
+  <input id="reg-password" placeholder="Password" type="password">
+  <button id="btn-register">註冊</button>
+  <div id="reg-message"></div>
+</div>
+
+<div class="section">
+  <h2>會員登入</h2>
+  <input id="login-email" placeholder="Email">
+  <input id="login-password" placeholder="Password" type="password">
+  <button id="btn-login">登入</button>
+  <div id="login-message"></div>
+</div>
+
+<!-- 商品管理 -->
+<div class="section">
+  <h2>商品管理 (CRUD)</h2>
+  <h3>新增商品</h3>
+  <input id="new-name" placeholder="名稱">
+  <input id="new-price" type="number" placeholder="價格">
+  <input id="new-desc" placeholder="描述">
+  <input id="new-image" type="file">
+  <button id="btn-add">新增</button>
+  <div id="crud-message"></div>
+
+  <h3>商品列表</h3>
+  <ul id="product-list"></ul>
+</div>
+
+<!-- 購物車 -->
+<div class="section">
+  <h2>購物車</h2>
+  <ul id="cart-list"></ul>
+  <button id="btn-checkout">下訂單</button>
+  <div id="order-message"></div>
+</div>
+
+<!-- 每日簽到 -->
+<div class="section">
+  <h2>每日簽到</h2>
+  <button id="btn-signin">簽到</button>
+  <div id="signin-message"></div>
+</div>
+
+<script>
+let currentUser = null;
+let cart = [];
+let products = [];
+
+// -------------------
+// 註冊
+document.getElementById("btn-register").addEventListener("click", async () => {
+  const name = document.getElementById("reg-name").value;
+  const email = document.getElementById("reg-email").value;
+  const password = document.getElementById("reg-password").value;
+
+  try {
+    const res = await fetch("http://localhost:3007/auth/register", {
+  method:"POST",
+  headers:{"Content-Type":"application/json"},
+  body: JSON.stringify({name,email,password})
+});
+const data = await res.json();
+
+    document.getElementById("reg-message").innerText = data.error || `註冊成功：${data.name}`;
+  } catch(err) {
+    document.getElementById("reg-message").innerText = "註冊失敗";
+  }
+});
+
+// -------------------
+// 登入
+document.getElementById("btn-login").addEventListener("click", async () => {
+  const email = document.getElementById("login-email").value;
+  const password = document.getElementById("login-password").value;
+
+  try {
+    const res = await fetch("http://localhost:3007/auth/login", {
+      method:"POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({email,password})
+    });
+    const data = await res.json();
+    if(data.error) {
+      document.getElementById("login-message").innerText = data.error;
+    } else {
+      currentUser = data;
+      document.getElementById("login-message").innerText = `登入成功：${data.name}`;
+      fetchProducts();
+    }
+  } catch(err) {
+    document.getElementById("login-message").innerText = "登入失敗";
+  }
+});
+
+// -------------------
+// 取得商品列表
+async function fetchProducts() {
+  const res = await fetch("http://localhost:3007/products");
+  products = await res.json();
+  renderProducts();
+}
+
+function renderProducts() {
+  const list = document.getElementById("product-list");
+  list.innerHTML = "";
+  products.forEach(p => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <img src="${p.image || 'https://via.placeholder.com/50'}">
+      ${p.name} - $${p.price} - ${p.description}
+      <button onclick="addToCart(${p.id}, '${p.name}', ${p.price})">加入購物車</button>
+      <button onclick="editProduct(${p.id})">編輯</button>
+      <button onclick="deleteProduct(${p.id})">刪除</button>
+    `;
+    list.appendChild(li);
+  });
+}
+
+// -------------------
+// 新增商品
+document.getElementById("btn-add").addEventListener("click", async () => {
+  if(!currentUser){ alert("請先登入"); return; }
+
+  const name = document.getElementById("new-name").value;
+  const price = document.getElementById("new-price").value;
+  const description = document.getElementById("new-desc").value;
+  const file = document.getElementById("new-image").files[0];
+
+  const formData = new FormData();
+  formData.append("name", name);
+  formData.append("price", price);
+  formData.append("description", description);
+  if(file) formData.append("image", file);
+
+  try {
+    const res = await fetch("http://localhost:3007/products", {
+      method: "POST",
+      body: formData
+    });
+    await res.json();
+    document.getElementById("crud-message").innerText = "商品新增成功";
+    fetchProducts();
+  } catch(err) {
+    document.getElementById("crud-message").innerText = "新增失敗";
+  }
+});
+
+// -------------------
+// 編輯商品
+async function editProduct(id) {
+  const name = prompt("新名稱");
+  const price = parseFloat(prompt("新價格"));
+  const description = prompt("新描述");
+
+  if(name && !isNaN(price)) {
+    await fetch(`http://localhost:3007/products/${id}`, {
+      method:"PUT",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({name,price,description})
+    });
+    document.getElementById("crud-message").innerText="商品更新成功";
+    fetchProducts();
+  }
+}
+
+// -------------------
+// 刪除商品
+async function deleteProduct(id) {
+  if(confirm("確定要刪除這個商品嗎？")) {
+    await fetch(`http://localhost:3007/products/${id}`, { method:"DELETE" });
+    document.getElementById("crud-message").innerText="商品刪除成功";
+    fetchProducts();
+  }
+}
+
+// -------------------
+// 購物車
+function addToCart(id,name,price){
+  cart.push({productId:id,name,price,quantity:1});
+  renderCart();
+}
+
+function renderCart(){
+  const list=document.getElementById("cart-list");
+  list.innerHTML="";
+  cart.forEach((item,index)=>{
+    const li=document.createElement("li");
+    li.innerHTML=`${item.name} - $${item.price} x ${item.quantity} <button onclick="removeFromCart(${index})">移除</button>`;
+    list.appendChild(li);
+  });
+}
+
+function removeFromCart(index){
+  cart.splice(index,1);
+  renderCart();
+}
+
+// -------------------
+// 下訂單
+document.getElementById("btn-checkout").addEventListener("click", async ()=>{
+  if(!currentUser){ alert("請先登入"); return; }
+  for(let item of cart){
+    await fetch("http://localhost:3007/orders",{
+      method:"POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({userId:currentUser.id,productId:item.productId,quantity:item.quantity})
+    });
+  }
+  cart=[];
+  renderCart();
+  document.getElementById("order-message").innerText="訂單已送出！";
+});
+
+// -------------------
+// 每日簽到
+document.getElementById("btn-signin").addEventListener("click", async ()=>{
+  if(!currentUser){ alert("請先登入會員"); return; }
+  const res = await fetch("http://localhost:3007/signin",{
+    method:"POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({userId:currentUser.id})
+  });
+  const data = await res.json();
+  document.getElementById("signin-message").innerText = data.message || "簽到成功！";
+});
+</script>
+</body>
+</html>

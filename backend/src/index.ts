@@ -1,36 +1,139 @@
-//告訴程式要用express(框架)，沒有import程式不知道express是什麼，會直接報錯，程式無法啟動
-import express from "express";//不寫會直接報錯，程式無法啟動
-//ts專用，對程式執行沒有影響，是型別檢查
-//寫(req:Request, res:Response)時，TS就不會知道這些型別
-//失去自動補全和錯誤檢查，容易寫錯程式
-import type { Request, Response } from "express";//不寫程式可以執行，但失去型別檢查與補全
-//process.env.PORT不會讀到.env，只能使用程式裏面硬寫的數字
-//例 const port = 3002;
-//環境變數就沒辦法修改了，程式在跑不同環境就不方便
-import "dotenv/config";//不寫就不能讀.env設定，必須手動寫死設定值
+import express from "express";
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcrypt";
+import cors from "cors";
+import multer from "multer";
+import path from "path";
 
-//建立伺服器主物件
 const app = express();
+const prisma = new PrismaClient();
+const port = process.env.PORT || 3007;
 
-//設定使用EJS作為樣板引擎
-app.set("view engine", "ejs");
-
-// 設定靜態內容資料夾
-app.use(express.static("public"));
-// 解析 JSON body 的中間件
+// ----------------------
+// 中間件
+// ----------------------
 app.use(express.json());
-// 解析 URL-encoded body 的中間件
 app.use(express.urlencoded({ extended: true }));
+app.use(cors()); // 允許前端跨域
 
-//設定首頁GET路由
-app.get("/", (req:Request, res:Response)=>{
-res.send("首頁");
+// ----------------------
+// 上傳圖片設定
+// ----------------------
+const upload = multer({ dest: path.join(process.cwd(), "public/uploads/") });
+
+// ----------------------
+// 靜態資源路徑
+// ----------------------
+app.use("/uploads", express.static(path.join(process.cwd(), "public/uploads")));
+
+// ========================
+// 會員系統
+// ========================
+
+// 註冊
+app.post("/auth/register", async (req, res) => {
+  const { name, email, password } = req.body;
+  if (!name || !email || !password)
+    return res.status(400).json({ error: "name, email, password required" });
+
+  const exists = await prisma.user.findUnique({ where: { email } });
+  if (exists) return res.status(400).json({ error: "Email already exists" });
+
+  const hashed = await bcrypt.hash(password, 10);
+  const user = await prisma.user.create({ data: { name, email, password: hashed } });
+
+  res.json({ id: user.id, name: user.name, email: user.email });
 });
 
-//啟動伺服器 
-//process.env.PORT → 從 .env 讀取
-//如果 .env 沒設定或讀不到 → 使用 3002 作為預設值
-const port = process.env.PORT || 3002;
-app.listen(port, ()=>{
-    console.log(`Express + TS 啟動 http://localhost:${port}`);
+
+// 登入
+app.post("/auth/login", async (req, res) => {
+  const { email, password } = req.body;
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user) return res.status(400).json({ error: "User not found" });
+
+  const match = await bcrypt.compare(password, user.password);
+  if (!match) return res.status(400).json({ error: "Incorrect password" });
+
+  res.json({ id: user.id, name: user.name, email: user.email });
+});
+
+// ========================
+// 商品 CRUD
+// ========================
+
+// 取得商品列表
+app.get("/products", async (req, res) => {
+  const products = await prisma.product.findMany();
+  res.json(products);
+});
+
+// 新增商品（可上傳圖片）
+app.post("/products", upload.single("image"), async (req, res) => {
+  const { name, price, description } = req.body;
+  const imageUrl = req.file ? `/uploads/${req.file.filename}` : "";
+
+  const product = await prisma.product.create({
+    data: {
+      name,
+      price: parseFloat(price),
+      description,
+      image: imageUrl,
+    },
+  });
+  res.json(product);
+});
+
+// 編輯商品
+app.put("/products/:id", async (req, res) => {
+  const id = parseInt(req.params.id);
+  const { name, price, description } = req.body;
+
+  const product = await prisma.product.update({
+    where: { id },
+    data: { name, price: parseFloat(price), description },
+  });
+  res.json(product);
+});
+
+// 刪除商品
+app.delete("/products/:id", async (req, res) => {
+  const id = parseInt(req.params.id);
+  await prisma.product.delete({ where: { id } });
+  res.json({ message: "Deleted" });
+});
+
+// ========================
+// 訂單
+// ========================
+app.post("/orders", async (req, res) => {
+  const { userId, productId, quantity } = req.body;
+  if (!userId || !productId || !quantity) return res.status(400).json({ error: "userId, productId, quantity required" });
+
+  const order = await prisma.order.create({ data: { userId, productId, quantity } });
+  res.json(order);
+});
+
+// ========================
+// 每日簽到
+// ========================
+app.post("/signin", async (req, res) => {
+  const { userId } = req.body;
+  if (!userId) return res.status(400).json({ error: "userId required" });
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const exists = await prisma.signin.findFirst({ where: { userId, date: today } });
+  if (exists) return res.json({ message: "Already signed in today" });
+
+  const signin = await prisma.signin.create({ data: { userId, date: today } });
+  res.json({ message: "簽到成功！", data: signin });
+});
+
+// ========================
+// 啟動伺服器
+// ========================
+app.listen(port, () => {
+  console.log(`Express + TS 啟動 http://localhost:${port}`);
 });

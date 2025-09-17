@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>商品測試頁</title>
+</head>
+<body>
+  <h1>商品列表</h1>
+  <ul id="product-list"></ul>
+
+  <h2>訂單結果</h2>
+  <pre id="order-result"></pre>
+
+  <script>
+    // 取得商品列表
+    async function loadProducts() {
+      const res = await fetch('http://localhost:3007/products');
+      const products = await res.json();
+      const list = document.getElementById('product-list');
+      list.innerHTML = '';
+
+      products.forEach(product => {
+        const li = document.createElement('li');
+        li.textContent = `${product.name} - $${product.price}`;
+        
+        // 點擊就下訂單 (數量固定 1)
+        li.style.cursor = 'pointer';
+        li.style.marginBottom = '5px';
+        li.onclick = async () => {
+          const orderRes = await fetch('http://localhost:3007/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productId: product.id, quantity: 1 })
+          });
+          const orderData = await orderRes.json();
+          document.getElementById('order-result').textContent = JSON.stringify(orderData, null, 2);
+        };
+
+        list.appendChild(li);
+      });
+    }
+
+    loadProducts();
+  </script>
+</body>
+</html>
