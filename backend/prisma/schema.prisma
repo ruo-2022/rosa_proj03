@@ -14,6 +14,7 @@ model User {
   password String
   orders   Order[]
   signins  Signin[]
+  role String @default("USER") // 新增這行，可設為 "ADMIN" 或 "USER"
 }
 
 model Product {

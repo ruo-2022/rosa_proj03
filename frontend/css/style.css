@@ -1,0 +1,396 @@
+/* 檔案位置: frontend/css/style.css */
+
+/* 新的 body 樣式 */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f4f7f6;
+    margin: 0;
+    display: flex; /* 依然使用 flex 但改變方向 */
+    flex-direction: column; /* 改為垂直排列 */
+    min-height: 100vh; /* 確保 body 至少和視窗一樣高 */
+    padding-top: 60px; /* Navbar 的高度 */
+    box-sizing: border-box;
+}
+
+.container {
+    background-color: #ffffff;
+    padding: 30px 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 25px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* 確保 padding 不會影響寬度 */
+}
+
+button[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* 附加到 style.css 的底部 */
+
+/* --- Universal Navbar Styles --- */
+#navbar-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+.main-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    height: 60px;
+}
+
+.nav-logo a {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    text-decoration: none;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-links li {
+    margin-left: 25px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #555;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+    color: #007bff;
+}
+
+/* 讓主要內容不會被 Navbar 蓋住 */
+body {
+    padding-top: 80px; /* 增加 body 的上邊距 */
+}
+
+/* 附加到 style.css 的底部 */
+
+/* --- Product Card Styles --- */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.product-card {
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.product-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.product-name {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 15px;
+    color: #333;
+}
+
+.product-description {
+    font-size: 14px;
+    color: #777;
+    margin: 0 15px 15px;
+    min-height: 40px;
+}
+
+.product-price {
+    font-size: 18px;
+    font-weight: bold;
+    color: #007bff;
+    margin: 0 15px 15px;
+}
+
+.add-to-cart-btn {
+    display: block;
+    width: calc(100% - 30px);
+    margin: 0 15px 15px;
+    padding: 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* 附加到 style.css 的底部 */
+
+/* --- Cart Icon Styles --- */
+.cart-icon-wrapper {
+    position: relative;
+}
+#cart-count {
+    position: absolute;
+    top: -8px;
+    right: -12px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    display: none; /* 預設隱藏 */
+}
+
+/* 附加到 style.css 的底部 */
+
+/* --- Shopping Cart Page Styles --- */
+.cart-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+.cart-item img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-right: 15px;
+}
+.cart-item .item-details {
+    flex-grow: 1;
+}
+.cart-item h4 {
+    margin: 0 0 5px 0;
+}
+.cart-item p {
+    margin: 0;
+    color: #666;
+}
+.remove-item-btn {
+    padding: 5px 10px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+#checkout-btn {
+    padding: 12px 25px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* 附加到 style.css 的底部 */
+
+/* --- Admin Page Styles --- */
+.admin-form-container {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+}
+.admin-form-container h2 {
+    margin-top: 0;
+}
+.form-buttons {
+    display: flex;
+    gap: 10px;
+}
+#product-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+#product-table th, #product-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    vertical-align: middle;
+}
+#product-table th {
+    background-color: #f2f2f2;
+}
+#product-table .edit-btn, #product-table .delete-btn {
+    padding: 5px 10px;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 5px;
+}
+#product-table .edit-btn {
+    background-color: #ffc107;
+}
+#product-table .delete-btn {
+    background-color: #dc3545;
+}
+
+/* 附加到 style.css 的底部 */
+
+/* --- Layout Adjustments --- */
+/* 寬版容器，用於首頁等需要更多空間的頁面 */
+.container.container-wide {
+    max-width: 1200px;
+}
+
+/* 附加到 style.css 的底部 */
+
+/* --- Footer Styles --- */
+.main-footer {
+    width: 100%;
+    background-color: #333;
+    color: #aaa;
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 50px;
+    font-size: 14px;
+}
+.main-footer a {
+    color: #fff;
+    text-decoration: none;
+}
+.main-footer a:hover {
+    text-decoration: underline;
+}
+
+/* --- Layout Fixes --- */
+/* 這個樣式會讓主要內容區塊自動擴展，把頁腳推到底部 */
+.container {
+    flex-grow: 1; 
+    width: 100%;
+    padding: 40px 20px;
+    box-sizing: border-box;
+}
+
+/* 附加到 style.css 的底部 */
+/* --- Check-in Styles --- */
+.signin-container {
+    text-align: center;
+}
+.checkin-grid {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.day-cell {
+    width: 60px;
+    height: 60px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    color: #888;
+    position: relative;
+    overflow: hidden; /* 隱藏超出邊界的印章部分 */
+}
+.day-cell .weekday {
+    font-weight: bold;
+}
+.day-cell .date-num {
+    font-size: 18px;
+}
+.day-cell.today {
+    border-color: #007bff;
+    color: #007bff;
+}
+.day-cell .stamp {
+    position: absolute;
+    width: 80%;
+    height: 80%;
+       border: 3px solid rgba(212, 175, 55, 0.8); /* 金色邊框 */
+    color: rgba(212, 175, 55, 0.8); /* 金色文字 */
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    transform: rotate(-15deg) scale(2); /* 初始狀態放大且旋轉 */
+    opacity: 0;
+    transition: all 0.3s ease-out;
+}
+.day-cell.checked .stamp {
+    transform: rotate(-15deg) scale(1); /* 蓋上時縮小回正常尺寸 */
+    opacity: 1;
+}
+#signin-button:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+}

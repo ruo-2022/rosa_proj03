@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>會員中心</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div id="navbar-container"></div>
+
+    <div class="container">
+        <h1>會員中心</h1>
+        <div class="user-info">
+            <p><strong>姓名：</strong><span id="user-name">載入中...</span></p>
+            <p><strong>Email：</strong><span id="user-email">載入中...</span></p>
+        </div>
+        <hr>
+        <h2>每日簽到</h2>
+        <div class="signin-container">
+            <div id="checkin-grid" class="checkin-grid">
+                </div>
+            <button id="signin-button">點我簽到</button>
+            <p id="signin-message" style="margin-top: 15px;"></p>
+        </div>
+    </div>
+    
+    <script src="/js/global.js"></script>
+    <script src="/js/user.js"></script>
+</body>
+</html>
