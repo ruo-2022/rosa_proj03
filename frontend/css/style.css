@@ -1,14 +1,16 @@
 /* 檔案位置: frontend/css/style.css */
 
 /* 新的 body 樣式 */
+/* 請用這段新的 body 樣式，完整替換掉舊的 */
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     background-color: #f4f7f6;
     margin: 0;
-    display: flex; /* 依然使用 flex 但改變方向 */
-    flex-direction: column; /* 改為垂直排列 */
-    min-height: 100vh; /* 確保 body 至少和視窗一樣高 */
-    padding-top: 60px; /* Navbar 的高度 */
+    display: flex;
+    flex-direction: column; /* 讓主要區塊垂直排列 */
+    align-items: center;   /* 【新增】讓所有區塊在水平方向上置中 */
+    min-height: 100vh;
+    padding-top: 60px;
     box-sizing: border-box;
 }
 
@@ -393,4 +395,48 @@ body {
 #signin-button:disabled {
     background-color: #aaa;
     cursor: not-allowed;
+}
+
+/* 附加到 style.css 的底部 */
+
+/* --- Auth Page Link Styles --- */
+.switch-auth-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #555;
+}
+.switch-auth-link a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 600;
+}
+.switch-auth-link a:hover {
+    text-decoration: underline;
+}
+/* 附加到 style.css 的底部 */
+
+/* --- Search Form Styles --- */
+.search-form {
+    display: flex;
+    margin-bottom: 30px;
+    max-width: 600px; /* 限制搜尋欄最大寬度 */
+    margin-left: auto;
+    margin-right: auto;
+}
+.search-form input {
+    flex-grow: 1; /* 讓輸入框佔滿可用空間 */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px 0 0 4px; /* 圓角只在左邊 */
+    font-size: 16px;
+}
+.search-form button {
+    padding: 10px 20px;
+    border: 1px solid #007bff;
+    background-color: #007bff;
+    color: white;
+    border-radius: 0 4px 4px 0; /* 圓角只在右邊 */
+    cursor: pointer;
+    font-size: 16px;
 }
